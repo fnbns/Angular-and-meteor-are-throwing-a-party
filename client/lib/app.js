@@ -1,4 +1,4 @@
- angular.module('campusParty', ['angular-meteor', 'ui.router'])
+ angular.module('campusParty', ['angular-meteor', 'ui.router', 'angularUtils.directives.dirPagination'])
 
  function onReady() {
      angular.bootstrap(document, ['campusParty'])
