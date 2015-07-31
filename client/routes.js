@@ -18,7 +18,14 @@ angular.module('campusParty').config(['$urlRouterProvider', '$stateProvider', '$
             .state('parties', {
                 url: '/parties',
                 templateUrl: 'client/parties/views/parties-list.ng.html',
-                controller: 'PartiesListCtrl'
+                controller: 'PartiesListCtrl',
+                resolve: {
+                    'subscribe': ['$meteor',
+                                    function ($meteor) {
+                            return $meteor.subscribe('parties')
+        }
+      ]
+                }
             })
             .state('partyDetails', {
                 url: '/parties/:partyId',
@@ -33,4 +40,4 @@ angular.module('campusParty').config(['$urlRouterProvider', '$stateProvider', '$
             //TODO #1: Implement require valid users for priviledge levels !
 
         $urlRouterProvider.otherwise('/parties')
-}])
+                    }])
