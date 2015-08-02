@@ -37,6 +37,15 @@
                  function (err) {
                      console.log('failed', err)
                  }
-             );
-         };
+             )
+         }
+
+         /* helper for front-end setup */
+         $scope.canInvite = function () {
+             if (!$scope.party)
+                 return false
+
+             return !$scope.party.public &&
+                 $scope.party.owner === Meteor.userId()
+         }
  }])
