@@ -1,14 +1,12 @@
-angular.module('campusParty')
-    .filter('displayName', function (user) {
+angular.module('campusParty').filter('displayName', function () {
+    return function (user) {
         if (!user)
-            return
-
-        if (user.profile && user.profile.name) {
+            return;
+        if (user.profile && user.profile.name)
             return user.profile.name
-        } else if (user.emails) {
+        else if (user.emails)
             return user.emails[0].address
-        } else {
+        else
             return user
-        }
-
-    })
+    }
+})

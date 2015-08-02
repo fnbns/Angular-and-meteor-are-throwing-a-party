@@ -20,7 +20,7 @@
                  })
              })
 
-             $scope.$meteorSubscribe('users')
+             $scope.users = $meteor.collection(Meteor.users, false).subscribe('users')
 
              /* save options on minimongo */
 
@@ -57,7 +57,6 @@
 
              /* UI - change page */
              $scope.pageChanged = function (newPage) {
-                 console.log(newPage)
                  $scope.page = newPage
              }
 
@@ -90,6 +89,28 @@
 
              $scope.getUserById = function (userId) {
                  return Meteor.users.findOne(userId)
+             }
+
+             /* rsvp method call */
+             $scope.rsvp = function (partyId, rsvp) {
+                 $meteor.call('rsvp', partyId, rsvp).then(
+                     function (data) {
+                         console.log('success responding', data)
+                     },
+                     function (err) {
+                         console.log('failed', err)
+                     }
+                 )
+             }
+
+             /* list of people who did not responded to invitation */
+             $scope.outstandingInvitations = function (party) {
+                 return _.filter($scope.users, function (user) {
+                     return (_.contains(party.invited, user._id) &&
+                         !_.findWhere(party.rsvps, {
+                             user: user._id
+                         }))
+                 })
              }
 
       }])

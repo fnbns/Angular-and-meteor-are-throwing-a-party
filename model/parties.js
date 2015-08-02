@@ -52,8 +52,68 @@
 
              })
          }
+     },
+
+     rsvp: function (partyId, rsvp) {
+         check(partyId, String)
+         check(rsvp, String)
+
+         if (!this.userId) {
+             throw new Meteor.Error(403, "You must be logged in to RSVP")
+         }
+
+         if (!_.contains(['yes', 'no', 'maybe'], rsvp)) {
+             throw new Meteor.Error(400, "Invalid RSVP")
+         }
+
+         var _party = Parties.findOne(partyId)
+
+         if (!_party) {
+             throw new Meteor.Error(404, "The party does not exist.")
+         }
+
+         /* if the user is not invited */
+         if (!party.public && party.owner !== this.userId && !_.contains(party.invited, this.userId))
+             throw new Meteor.Error(404, "The party does not exist.")
+
+         var rsvpIndex = _.indexOf(_.pluck(_party.rsvps, 'user'), this.userId)
+
+         if (rsvpIndex !== -1) {
+
+             if (Meteor.isServer) {
+                 Parties.update({
+                     _id: partyId,
+                     "rsvps.user": this.userId
+                 }, {
+                     $set: {
+                         "rsvps.$.rsvp": rsvp
+                     }
+                 })
+             } else {
+                 // minimongo doesn't yet support $ in modifier. as a temporary
+                 // workaround, make a modifier that uses an index. this is
+                 // safe on the client since there's only one thread.
+                 var modifier = {
+                     $set: {}
+                 };
+                 modifier.$set["rsvps." + rsvpIndex + ".rsvp"] = rsvp;
+                 Parties.update(partyId, modifier)
+             }
+         } else {
+             // add new rsvp entry
+             Parties.update(partyId, {
+                 $push: {
+                     rsvps: {
+                         user: this.userId,
+                         rsvp: rsvp
+                     }
+                 }
+             })
+         }
+
      }
  })
+
 
  var contactEmail = function (user) {
      if (user.emails && user.emails.length)
