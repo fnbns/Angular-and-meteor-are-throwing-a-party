@@ -10,6 +10,7 @@
              }
 
              /* subscribe with options */
+
              $meteor.autorun($scope, function () {
                  $meteor.subscribe('parties', {
                      limit: parseInt($scope.getReactively('perPage')),
@@ -17,6 +18,23 @@
                      sort: $scope.getReactively('sort')
                  }, $scope.getReactively('search')).then(function () {
                      $scope.partiesCount = $meteor.object(Counts, 'numberOfParties', false)
+
+                     $scope.parties.forEach(function (party) {
+                         party.onClicked = function () {
+                             $state.go('partyDetails', {
+                                 partyId: party._id
+                             })
+                         }
+                     })
+
+                     $scope.map = {
+                         center: {
+                             latitude: 45,
+                             longitude: -73
+                         },
+                         zoom: 8
+                     }
+
                  })
              })
 
